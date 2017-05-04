@@ -2,11 +2,11 @@
 
 ---
 
-##语音激活检测
+## 语音激活检测
 [源代码][1]：Alex语音对话管理系统(python)
 `Alex/alex/comenents/vad`
 
-##编译运行
+## 编译运行
 ```sh
 source ffnn
 # 生成可执行文件 vad
@@ -26,7 +26,7 @@ source ffnn
     ```
     如果修改训练参数，需要在main.cpp中相应修改参数。
 
-##contributors
+## contributors
 ```
 /************************
  *    Vanessa Feng
