@@ -1,0 +1,76 @@
+/********************************************************************
+*
+* Copyright (c) 2017, Vanessa Feng.
+*
+* Rewrite from Alex-vad-ffnn which is writen by Python, we want to 
+* use it to Andrews equipment which writen by Java. Because of better 
+* transferring this feature， we need to rewrite it by C or C++.
+*
+*********************************************************************/
+#ifndef FMCCFRONTEND_H
+#define FMCCFRONTEND_H
+
+#include <vector>
+#include <deque>
+#include <complex>
+#include <cmath>
+#include <string>
+#include <iostream>
+#include <stdlib.h>
+#include <malloc.h>
+#include <bitset>
+
+using namespace std;
+#define INF 1000000000000
+const float PI=3.1415926536;
+
+class MFCCFrontEnd{
+public:
+	MFCCFrontEnd(int sample_rate, int frame_size, bool usehamming, float preemcoef, int numchans, int ceplifter, int numceps, bool enormalise, bool zmeansource, bool usepower, bool usec0, bool usecmn, bool usedelta, bool useacc, int n_frames, int lofreq, int hifreq, bool mel_banks_only);
+	~MFCCFrontEnd();
+	void InitHamming();
+	void HammingWindow(short* buf, float* data);
+	vector<float> preemphasis(vector<float> frame);
+	vector<vector<float> > MFCCFrontEnd::param(vector<float> frame);
+
+
+	//float FrmEnergy(short* data);
+	void computerFFT(float *buffer,vector<complex<float> >& vec);
+	void FFT(const unsigned long & fftlen, vector<complex<float> >& vec);
+	void InitFilt(float (*w)[FFTsize/2+1], int num_filt); 
+	void CreateFilt(float (*w)[FFTsize/2+1], int num_filt, int Fs, int high, int low);
+	void mag_square(vector<complex<float> > & vec, vector<float> & vec_mag);
+	void Mel_EN(float (*w)[FFTsize/2+1],int num_filt, vector<float>& vec_mag, float * M_energy);
+	void Cepstrum(float *M_energy);
+	void Ceps_melonly(float *M_energy);
+
+private:
+	int samplerate;
+	int framesize;
+	int FFTsize;
+	int FiltNum;
+	double *Hamming;      
+	float prior;
+	int HIGH;
+	int LOW;	
+	float preecoef_m;
+	bool mel_only;
+	int n_frames;	
+
+	short buffer[framesize];
+	float data[framesize];
+	float energy=0.0;
+	float mel_energy[FiltNum];        
+
+	vector<complex<float> > zero_padded;
+	vector <float> fft_mag;   
+
+	const int numceps;
+	float FiltWeight[FiltNum][FFTsize/2+1];
+	const int LOGENERGY;
+	deque<float> mfcc_queue;
+
+
+};
+
+#endif // MFCCFRONTEND_H

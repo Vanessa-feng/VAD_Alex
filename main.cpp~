@@ -1,0 +1,93 @@
+/********************************************************************
+*
+* Copyright (c) 2017, Vanessa Feng.
+*
+* Rewrite from Alex-vad-ffnn which is writen by Python, we want to 
+* use it to Andrews equipment which writen by Java. Because of better 
+* transferring this feature， we need to rewrite it by C or C++.
+*
+* 打算作为ffnn.cpp的调用函数，读取wav文件
+* 传入data即是str型，ffnn中不用unpack
+*
+* 2017.3.16
+*
+*********************************************************************/
+
+#include "ffnn.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <stdlib.h>
+
+#define WINDOW_SIZE (512)
+#define SAMPLE_RATE (16000)
+
+using namespace std;
+
+struct wav_struct
+{
+        unsigned short channel;             //通道数
+        unsigned long frequency;            //采样频率
+        unsigned short sample_num_bit;      //一个样本的位数
+        unsigned long data_size;            //数据长度
+        char *data;                         //音频数据 
+};
+
+int main(int argc, char *argv[]){
+
+	if (argc == 1){
+		printf("请指定wav文件路径！\n");
+		exit(0);
+	}
+
+
+	fstream wavfile;
+    	wav_struct WAV;
+	wavfile.open(argv[1], ios::binary | ios::in);	
+	
+    	wavfile.seekg(0x14);
+    	wavfile.read((char*)&WAV.channel, sizeof(WAV.channel));
+ 
+    	wavfile.seekg(0x18);
+    	wavfile.read((char*)&WAV.frequency, sizeof(WAV.frequency));
+ 
+    	wavfile.seekg(0x22);
+    	wavfile.read((char*)&WAV.sample_num_bit, sizeof(WAV.sample_num_bit));
+ 
+    	wavfile.seekg(0x28);
+    	wavfile.read((char*)&WAV.data_size, sizeof(WAV.data_size));
+ 
+    	WAV.data = new char[WAV.data_size];
+
+	wavfile.seekg(0x2c);
+    	wavfile.read((char *)WAV.data, sizeof(char)*WAV.data_size);
+	/*
+        cout << "音频通道数  ：" << WAV.channel << endl;
+    	cout << "采样频率    ：" << WAV.frequency << endl;
+    	cout << "样本位数    ：" << WAV.sample_num_bit << endl;
+    	cout << "音频数据大小：" << WAV.data_size << endl;
+	*/
+	char* buf_c = 0;
+	vector<char> sound;
+	for (unsigned long i=0; i<WAV.data_size; i++){
+		char data_sound = WAV.data[i];
+		sound.push_back(data_sound);
+	
+	}
+	buf_c = &sound[0];
+    	wavfile.close();
+	
+	FFNNVADGeneral ffnn(16000, 512, 160, true, 0.97, 26, 22, 12, true, true, true, false, false, false, false, 10, 10, 125, 3800, true);
+	ffnn.decide(buf_c,WAV.data_size);
+	//LTSD ltsd(WINDOW_SIZE, SAMPLE_RATE, ORDER, 40.0, 80.0, 60.0, 50.0);
+	//bool is_signal = ltsd.process(buf_c, WAV.data_size);
+	/*
+	if(is_signal){
+		cout << 1 << "\n";
+	}else{
+		cout << 0 << "\n";
+	}
+	*/
+	return 0;
+}
+

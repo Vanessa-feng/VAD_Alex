@@ -1,0 +1,80 @@
+/********************************************************************
+*
+* Copyright (c) 2017, Vanessa Feng.
+*
+* Rewrite from Alex-vad-ffnn which is writen by Python, we want to 
+* use it to Andrews equipment which writen by Java. Because of better 
+* transferring this feature， we need to rewrite it by C or C++.
+*
+*********************************************************************/
+#ifndef FMCCFRONTEND_H
+#define FMCCFRONTEND_H
+
+#include <vector>
+#include <deque>
+#include <complex>
+#include <cmath>
+#include <string>
+#include <iostream>
+#include <stdlib.h>
+#include <malloc.h>
+#include <bitset>
+
+using namespace std;
+#define INF 1000000000000
+const float PI=3.1415926536;
+
+class MFCCFrontEnd{
+public:
+	MFCCFrontEnd(int sample_rate, int frame_size, float preemcoef, int numchans, int numceps, int n_frames, bool mel_banks_only);
+	~MFCCFrontEnd();
+	void InitHamming();
+	void HammingWindow(vector<float> buf, vector<float> &data);
+	vector<float> preemphasis(vector<float> frame);
+	float* param(vector<float> frame);
+	void getMFCCs();
+	
+	//float FrmEnergy(short* data);
+	void computerFFT(vector<float> buffer,vector<complex<float> >& vec);
+	void FFT(const unsigned long & fftlen, vector<complex<float> >& vec);
+	void InitFilt(float **w, int num_filt); 
+	void CreateFilt(float **w, int num_filt, int Fs, int high, int low);
+	void mag_square(vector<complex<float> > & vec, vector<float> & vec_mag);
+	void Mel_EN(float **w, int num_filt, vector<float>& vec_mag, float * M_energy);
+	void Cepstrum(float *M_energy,float *mfcc_queue);
+	void Ceps_melonly(float *M_energy,float *mfcc_queue);
+	
+
+private:
+	int samplerate;
+	int framesize;
+	unsigned int FFTsize;
+	unsigned int filt_size;
+	int FiltNum;
+	float *Hamming;      
+	float prior;
+	int HIGH;
+	int LOW;	
+	float preemcoef_m;
+	bool mel_only;
+	int n_frames_mf;	
+
+	vector<float> buffer;
+	vector<float> data;
+	
+	//float energy;
+	float *mel_energy;        
+	vector<float> out_frame;
+	vector<complex<float> > zero_padded;
+	vector <float> fft_mag;
+	
+	int numceps;
+	float **FiltWeight;
+	float **w;
+	int LOGENERGY;
+	float *mfcc_queue;
+	vector<float> mfcc;
+
+};
+
+#endif // MFCCFRONTEND_H
