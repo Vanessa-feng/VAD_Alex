@@ -17,5 +17,5 @@ Voice activity detection.
 - test C++调用Eigen和jsoncpp的测试
 
 ## Reference
-- [对话管理系统:Alex](https://github.com/UFAL-DSG/alex), 其中`alex/tools/vad/train_vad_nn_theano.py`训练生成模型参数.
+- [对话管理系统:Alex](https://github.com/UFAL-DSG/alex).
 - [梅尔频率mfcc(c++)](https://github.com/weedwind/MFCC).
