@@ -1,6 +1,7 @@
 # VAD_Alex
 Voice activity detection.
 
+```
 ####################################################
 #     voice activity detection via MFCC+FFNN
 #
@@ -8,6 +9,7 @@ Voice activity detection.
 # Blog: http://Vanessa-feng.github.com
 # Email: vanessaxin-feng@gmail.com
 ####################################################
+```
 
 ##Description
 - python--神经网络方法, mfcc作为检测特征
